@@ -99,8 +99,10 @@ int main()
         }
     }
 
+
     while (!q_0.isEmpty() || !q_1.isEmpty())
     {
+        // We make sure that all the 0-type cars can be loaded first;
         while (load < 8 && !q_0.isEmpty() && q_0.getHead() <= currentT)
         {
             totalWaitT_0 += currentT - q_0.getHead();
@@ -108,6 +110,7 @@ int main()
             load++;
         }
 
+        // And then 1-type cars will be loaded;
         while (load < 10 && !q_1.isEmpty() && q_1.getHead() <= currentT)
         {
             totalWaitT_1 += currentT - q_1.getHead();
