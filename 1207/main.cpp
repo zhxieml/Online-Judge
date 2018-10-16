@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 using namespace std;
+
 class seqQueue
 {
 private:
@@ -16,12 +17,6 @@ public:
     void enQueue(const int &x);
     int deQueue();
     int getHead() const;
-};
-
-struct ship
-{
-    int load;
-    int num_0;
 };
 
 seqQueue::seqQueue(int size)
@@ -69,6 +64,8 @@ int seqQueue::getHead() const
 {
     return elem[(front + 1) % maxSize];
 }
+
+/////////////////////////////////////////////////////////////////////////////
 
 int main()
 {
