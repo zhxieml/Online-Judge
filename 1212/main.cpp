@@ -12,7 +12,7 @@ private:
     void doubleSpace();
 
 public:
-    seqQueue(int size = 1);
+    seqQueue(int size = 10);
     ~seqQueue();
 
     void enQueue(const T &x);
@@ -191,7 +191,7 @@ T seqQueue<T>::getHead() const
 struct Node
 {
     Node *left, *right, *parent;
-    int data, index;
+    int data;
 
     Node(int d = 0, Node *l = NULL, Node *r = NULL, Node *p = NULL): left(l), right(r), parent(p), data(d){}
     ~Node(){};
@@ -236,13 +236,10 @@ int main()
     Node *tmp;
     que.enQueue(root);
 
-    cout << '!' << endl;
-
     while (!que.isEmpty())
     {
         tmp = que.deQueue();
 
-        cout << '!' << endl;
         cout << tmp->data << ' ';
         if (tmp->left) que.enQueue(tmp->left);
         if (tmp->right) que.enQueue(tmp->right);
