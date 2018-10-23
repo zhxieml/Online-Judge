@@ -33,9 +33,11 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="dLinkList.cpp" />
+		<Unit filename="linkQueue.cpp" />
 		<Unit filename="linkStack.cpp" />
 		<Unit filename="sLinkList.cpp" />
 		<Unit filename="seqList.cpp" />
+		<Unit filename="seqQueue.cpp" />
 		<Unit filename="seqStack.cpp" />
 		<Extensions>
 			<code_completion />
