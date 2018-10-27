@@ -1,141 +1,123 @@
 #include <iostream>
 using namespace std;
 
-int lastIndex(double n)
-{
-    int count = 0, result = 1;
-    while (n >= 2)
-    {
-        n /= 2;
-        count++;
-    }
-
-    for (int i = 0; i < count; i++) result *= 2;
-
-    return result * 2 - 1;
-}
-
-/////////////////////////////////////////////////////////////////////
-
-template <class eT>
-class seqQueue
+template <class Type>
+class linkQueue
 {
 private:
-    eT *elem;
-    int maxSize;
-    int front, rear;
-    void doubleSpace();
+    struct node
+    {
+        Type data;
+
+        node *next;
+
+        node(const Type &x, node *n = NULL)
+        {
+            data = x;
+            next = n;
+        }
+
+        node(): next(NULL){}
+        ~node(){}
+    };
+
+    node *front, *rear;
 
 public:
-    seqQueue(int size = 10);
-    ~seqQueue();
+    linkQueue();
+    ~linkQueue();
     bool isEmpty() const;
-    void enQueue(const eT &x);
-    eT deQueue();
-    eT getHead() const;
+    void enQueue(const Type &x);
+    Type deQueue();
+    Type getHead() const;
 };
 
-template <class eT>
-seqQueue<eT>::seqQueue(int size)
+template <class Type>
+linkQueue<Type>::linkQueue()
 {
-    elem = new eT[size];
-    maxSize = size;
-    front = rear = 0;
+    front = rear = NULL;
 }
 
-template <class eT>
-seqQueue<eT>::~seqQueue()
+template <class Type>
+linkQueue<Type>::~linkQueue()
 {
-    delete [] elem;
+    node *tmp;
+    while (front != NULL)
+    {
+        tmp = front;
+        front = front->next;
+        delete tmp;
+    }
 }
 
-template <class eT>
-void seqQueue<eT>::doubleSpace()
+template <class Type>
+bool linkQueue<Type>::isEmpty() const
 {
-    eT *tmp = elem;
-    elem = new eT[maxSize * 2];
-    for (int i = i; i <= maxSize; i++) elem[i] = tmp[(front + i) % maxSize];
-    front = 0;
-    rear = maxSize;
-    maxSize *= 2;
+    return front == NULL;
+}
+
+template <class Type>
+Type linkQueue<Type>::getHead() const
+{
+    return front->data;
+}
+
+template <class Type>
+void linkQueue<Type>::enQueue(const Type &x)
+{
+    if (rear == NULL) front = rear = new node(x);
+    else rear = rear->next = new node(x);
+}
+
+template <class Type>
+Type linkQueue<Type>::deQueue()
+{
+    node *tmp = front;
+    Type value = front->data;
+    front = front->next;
+    if (front == NULL) rear = NULL; // empty
     delete tmp;
+    return value;
 }
 
-template <class eT>
-bool seqQueue<eT>::isEmpty() const
+////////////////////////////////////////////////////////
+
+struct node
 {
-    return front == rear;
-}
+    int data;
+    node *left, *right, *parent;
 
-template <class eT>
-void seqQueue<eT>::enQueue(const eT &x)
-{
-    if ((rear + 1) % maxSize == front) doubleSpace();
-    rear = (rear + 1) % maxSize;
-    elem[rear] = x;
-}
+    node(int d = 0, node *l = NULL, node *r = NULL, node *p = NULL): data(d), left(l), right(r), parent(p){}
+    ~node(){};
+};
 
-template <class eT>
-eT seqQueue<eT>::deQueue()
-{
-    front = (front + 1) % maxSize;
-    return elem[front];
-}
-
-template <class eT>
-eT seqQueue<eT>::getHead() const
-{
-    return elem[(front + 1) % maxSize];
-}
-
-/////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
 
 class bTree
 {
 private:
-    struct Node
-    {
-        Node *left, *right;
-        int data;
-
-        Node(int D = 0, Node *L = NULL, Node *R = NULL): data(D), left(L), right(R){}
-        ~Node(){}
-    };
-
-    Node *root;
+    node *root;
 
 public:
-    bTree(int l[], int r[], int num);
+    bTree(node *r = NULL): root(r){}
     ~bTree();
 
     void clear();
     bool isCBT() const;
-    void levelTravel() const;
 
 private:
-    void clear(Node *&x);
-
+    void clear(node *&x);
 };
 
-bTree::bTree(int l[], int r[], int num)
+bTree::~bTree()
 {
-    seqQueue<Node *> que;
-    Node *tmp;
-    int x, ldata, rdata;
-    root = new Node(num);
-    que.enQueue(root);
-
-    while(!que.isEmpty())
-    {
-        tmp = que.deQueue();
-        if (l[tmp->data] != 0) que.enQueue(tmp->left = new Node(l[tmp->data]));
-        if (r[tmp->data] != 0) que.enQueue(tmp->right = new Node(r[tmp->data]));
-    }
+    clear(root);
 }
 
-void bTree::clear(bTree::Node *&x)
+void bTree::clear(node *&x)
 {
     if (x == NULL) return;
+
     clear(x->left);
     clear(x->right);
     delete x;
@@ -147,94 +129,10 @@ void bTree::clear()
     clear(root);
 }
 
-bTree::~bTree()
-{
-    clear(root);
-}
-
-//void bTree::create(int l[], int r[], int num)
-//{
-//    seqQueue<Node *> que;
-//    Node *tmp;
-//    int x, ldata, rdata;
-//    root = new Node(num);
-//    que.enQueue(root);
-//
-//    while(!que.isEmpty())
-//    {
-//        tmp = que.deQueue();
-//        if (l[tmp->data] != 0) que.enQueue(tmp->left = new Node(l[tmp->data]));
-//        if (r[tmp->data] != 0) que.enQueue(tmp->right = new Node(r[tmp->data]));
-//    }
-//}
-
-void bTree::levelTravel() const
-{
-    seqQueue<Node *> que;
-    Node *tmp;
-    que.enQueue(root);
-
-    while (!que.isEmpty())
-    {
-        tmp = que.deQueue();
-
-        cout << tmp->data << ' ';
-        if (tmp->left) que.enQueue(tmp->left);
-        if (tmp->right) que.enQueue(tmp->right);
-    }
-}
-
-//bool bTree::isCBT() const
-//{
-//    seqQueue<Node *> que;
-//    Node *tmp;
-//    int count = 0;
-//
-//    que.enQueue(root);
-//
-//    while (!que.isEmpty())
-//    {
-//        tmp = que.deQueue();
-//        count++;
-//
-//        if (tmp->left == NULL && tmp->right != NULL) return false;
-//
-//        if (tmp->left == NULL || tmp->right == NULL)
-//        {
-//            if (tmp->left) que.enQueue(tmp->left);
-//            if (tmp->right) que.enQueue(tmp->right);
-//
-////            for (int i = count + 1; i <= lastIndex(count); i++)
-////            {
-////                tmp = que.deQueue();
-////
-////                if (tmp->left != NULL || tmp->right != NULL) return false;
-//////
-//////                if (tmp->left) que.enQueue(tmp->left);
-//////                if (tmp->right) que.enQueue(tmp->right);
-////            }
-//
-//            while (!que.isEmpty())
-//            {
-//                tmp = que.deQueue();
-//                if (tmp->left != NULL || tmp->right != NULL) return false;
-//            }
-////            if (que.isEmpty()) return true;
-////            return false;
-//            return true;
-//        }
-//
-//        que.enQueue(tmp->left);
-//        que.enQueue(tmp->right);
-//    }
-//
-//    return true;
-//}
-
 bool bTree::isCBT() const
 {
-    seqQueue<Node *> que;
-    Node *tmp;
+    linkQueue<node *> que;
+    node *tmp;
 
     que.enQueue(root);
 
@@ -254,23 +152,49 @@ bool bTree::isCBT() const
     return true;
 }
 
-/////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
 
 int main()
 {
     int num;
     cin >> num;
 
-    int *leftC = new int[num + 1], *rightC = new int[num + 1];
+    node **nodes;
+    nodes = new node *[num + 10];
 
-    for (int i = 1; i <= num; i++) cin >> leftC[i] >> rightC[i];
+    for (int i = 0; i < num + 10; i++) nodes[i] = new node;
 
-    bTree bt(leftC, rightC, num);
+    int l, r;
 
-    if (bt.isCBT()) cout << 'Y';
+    for (int i = 1; i <= num; i++)
+    {
+        nodes[i]->data = i;
+        cin >> l >> r;
+
+        if (l)
+        {
+            nodes[i]->left = nodes[l];
+            nodes[l]->parent = nodes[i];
+        }
+
+        if (r)
+        {
+            nodes[i]->right = nodes[r];
+            nodes[r]->parent = nodes[i];
+        }
+    }
+
+    node *root = nodes[1];
+
+    while (root->parent) root = root->parent;
+
+    bTree tree(root);
+
+    if (tree.isCBT()) cout << 'Y';
     else cout << 'N';
-
-    delete [] leftC;
-    delete [] rightC;
-    return 0;
 }
+
+
+
+
+
