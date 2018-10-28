@@ -11,7 +11,6 @@ int main()
     for (int i = 0; i < n; i++) people[i] = i + 1;
 
     int call = 0;
-
     int index;
 
     for (int i = 0; i < k; i++)

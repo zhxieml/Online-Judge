@@ -46,11 +46,6 @@ bool seqQueue<Type>::isEmpty() const
 template <class Type>
 void seqQueue<Type>::enQueue(const Type &x)
 {
-//    if ((rear + 1) % maxSize == front)
-//    {
-//        cout << "Full" << endl;
-//        doubleSpace();
-//    }
     rear = (rear + 1) % maxSize;
     elem[rear] = x;
 
@@ -100,14 +95,12 @@ int main()
 
     for (int i = 0; i < m; i++)
     {
-//        cout << numList[i] << endl;
         if (que.isFull()) que.deQueue();
         que.enQueue(numList[i]);
         if (count < n) count++;
 
         cout << que.getTotal() / count << endl;
     }
-
-
+    
     return 0;
 }
