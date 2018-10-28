@@ -8,10 +8,11 @@ private:
     Type *elem;
     int maxSize;
     int front, rear;
+
     void doubleSpace();
 
 public:
-    seqQueue(int size = 100000);
+    seqQueue(int size = 10);
     ~seqQueue();
     bool isEmpty() const;
     void enQueue(const Type &x);
