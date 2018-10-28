@@ -346,16 +346,14 @@ int main()
     preTraverse(root);
 
     cout << endl;
-//
+
     postTraverse(root);
 
     cout << endl;
-//
+
     levelTraverse(root);
     return 0;
 }
-
-
 
 
 

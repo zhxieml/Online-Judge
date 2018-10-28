@@ -250,24 +250,6 @@ bool isSameSNode(sNode sn1, sNode sn2)
     return true;
 }
 
-void preTraverse(node *root)
-{
-    linkStack<node *> s;
-    node *tmp;
-    s.push(root);
-
-    while (!s.isEmpty())
-    {
-        tmp = s.pop();
-        cout << tmp->data << ' ';
-
-        if (tmp->right) s.push(tmp->right);
-        if (tmp->left) s.push(tmp->left);
-    }
-
-    cout << endl;
-}
-
 bool isSamePre(const bTree &t1, const bTree &t2)
 {
     linkStack<node *> s1, s2;

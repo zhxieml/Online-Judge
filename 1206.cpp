@@ -60,7 +60,6 @@ int seqStack::pop()
 
 int seqStack::top() const
 {
-    if (top_p == -1) return -1;    /////////////////////////////////////////////
     return elem[top_p];
 }
 
