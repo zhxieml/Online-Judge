@@ -10,17 +10,6 @@ struct node
     ~node(){}
 };
 
-//struct sNode
-//{
-//    node *oNode;
-//    int timePop;
-//
-//    sNode(node *n = NULL): oNode(n), timePop(0){}
-//    ~sNode(){}
-//};
-
-///////////////////////////////////////////////////////////////
-
 template <class Type>
 class linkStack
 {
@@ -176,75 +165,6 @@ Type linkQueue<Type>::deQueue()
     delete tmp;
     return value;
 }
-
-///////////////////////////////////////////////////////////////
-
-//void preTraverse(node *root)
-//{
-//    linkStack<node *> s;
-//    node *tmp;
-//    s.push(root);
-//
-//    while (!s.isEmpty())
-//    {
-//        tmp = s.pop();
-//        cout << tmp->data << ' ';
-//
-//        if (tmp->right) s.push(tmp->right);
-//        if (tmp->left) s.push(tmp->left);
-//    }
-//
-//    cout << endl;
-//}
-//
-//void postTraverse(node *root)
-//{
-//    linkStack<sNode> s;
-//    sNode tmp(root);
-//    s.push(tmp);
-//
-//    while (!s.isEmpty())
-//    {
-//        tmp = s.pop();
-//
-//        if (++tmp.timePop == 3)
-//        {
-//            cout << tmp.oNode->data << ' ';
-//            continue;
-//        }
-//
-//        s.push(tmp);
-//
-//        if (tmp.timePop == 1)
-//        {
-//            if (tmp.oNode->left != NULL) s.push(sNode(tmp.oNode->left));
-//        }
-//
-//        else
-//        {
-//            if (tmp.oNode->right != NULL) s.push(sNode(tmp.oNode->right));
-//        }
-//    }
-//
-//    cout << endl;
-//}
-//
-//void levelTraverse(node *root)
-//{
-//    linkQueue<node *> que;
-//    node *tmp;
-//    que.enQueue(root);
-//
-//    while (!que.isEmpty())
-//    {
-//        tmp = que.deQueue();
-//        cout << tmp->data << ' ';
-//
-//        if (tmp->left) que.enQueue(tmp->left);
-//        if (tmp->right) que.enQueue(tmp->right);
-//    }
-//
-//}
 
 void preTraverse(node *root)
 {
