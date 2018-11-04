@@ -1,121 +1,288 @@
 #include <iostream>
+#include <cmath>
 #include <cstring>
 using namespace std;
 
-template<class Type>
-class priorityQueue
+template <class Type>
+struct node
 {
-private:
-    int currentLength;
-    Type *elem;
-    int maxSize;
+    Type data;
+    node *son, *bro;
 
-    void doubleSpace();
-    void buildHeap();
-    void percolateDown(int hole);
-
-public:
-    priorityQueue(int capacity = 100);
-    priorityQueue(const Type data[], int size);
-    ~priorityQueue();
-    bool isEmpty() const;
-    void enQueue(const Type &x);
-    Type deQueue();
-    Type getHead() const;
+    node(Type d, node *s = NULL, node *b = NULL): data(d), son(s), bro(b){}
+    ~node(){}
 };
 
-template<class Type>
-priorityQueue<Type>::priorityQueue(int capacity)
+////////////////////////////////////////////////////////
+
+template <class Type>
+class Bernoulli
 {
-    elem = new Type[capacity];
-    maxSize = capacity;
-    currentLength = 0;
+private:
+    node<Type> **forest;
+    int scale;
+
+    node<Type> *merge(node<Type> *t1, node<Type> *t2);
+    int findMin();
+    void deleteTree(node<Type> *x);
+
+public:
+    Bernoulli(int n = 100);
+    ~Bernoulli();
+
+    void enQueue(Type x);
+    Type deQueue();
+    bool isEmpty();
+    Type getHead();
+    void merge(Bernoulli &other);
+    void show() const;
+};
+
+template <class Type>
+void Bernoulli<Type>::deleteTree(node<Type> *x)
+{
+    node<Type> *son = x->son, *t;
+    while (son != NULL)
+    {
+        t = son;
+        son = son->bro;
+        deleteTree(t);
+    }
+
+    delete(x);
 }
 
-template<class Type>
-priorityQueue<Type>::~priorityQueue()
+template <class Type>
+Bernoulli<Type>::Bernoulli(int n)
 {
-    delete [] elem;
+    scale = int(log(n) / log(2)) + 1;
+    forest = new node<Type> *[scale];
+    for (int i = 0; i < scale; i++) forest[i] = NULL;
 }
 
-template<class Type>
-bool priorityQueue<Type>::isEmpty() const
+template <class Type>
+Bernoulli<Type>::~Bernoulli()
 {
-    return currentLength == 0;
+    for (int i = 0; i < scale; i++)
+    {
+        if (forest[i] != NULL) deleteTree(forest[i]);
+    }
+
+    delete [] forest;
 }
 
-template<class Type>
-Type priorityQueue<Type>::getHead() const
+template <class Type>
+void Bernoulli<Type>::merge(Bernoulli &other)
 {
-    return elem[1];
-}
+    node<Type> **tmp = forest;
+    node<Type> *carry;
+    int tmpSize = scale;
+    int min = scale < other.scale ? scale : other.scale;
+    int i;
 
-template<class Type>
-void priorityQueue<Type>::doubleSpace()
-{
-    Type *tmp = elem;
+    if (scale < other.scale)
+    {
+        scale = other.scale;
+        if (other.forest[scale - 1] != NULL) scale++;
+    }
 
-    maxSize *= 2;
-    elem = new Type[maxSize];
-    for (int i = 0; i <= currentLength; i++) elem[i] = tmp[i];
+    else if (forest[scale - 1] != NULL) scale++;
+
+    forest = new node<Type> *[scale];
+    for (i = 0; i < scale; i++) forest[i] = NULL;
+
+    carry = NULL;
+    for (i = 0; i < min; i++)
+    {
+        if (carry == NULL)
+        {
+            if (tmp[i] == NULL) forest[i] = other.forest[i];
+
+            else 
+            {
+                if (other.forest[i] == NULL) forest[i] = tmp[i];
+                else carry = merge(other.forest[i], tmp[i]);
+            }
+        }
+
+        else
+        {
+            if (tmp[i] != NULL && other.forest[i] != NULL)
+            {
+                forest[i] = carry;
+                carry = merge(other.forest[i], tmp[i]);
+            }
+
+            else
+            {
+                if (tmp[i] == NULL && other.forest[i] == NULL)
+                {
+                    forest[i] = carry;
+                    carry = NULL;
+                }
+
+                else 
+                {
+                    if (tmp[i] == NULL) carry = merge(other.forest[i], carry);
+                    
+                    else carry = merge(tmp[i], carry);
+                }
+            }
+        }   
+    }
+
+    if (other.scale == min)
+    {
+        for (; i < tmpSize; i++)
+        {
+            if (carry == NULL) forest[i] = tmp[i];
+
+            else
+            {
+                if (tmp[i] == NULL)
+                {
+                    forest[i] = carry;
+                    carry = NULL;
+                }
+
+                else carry = merge(tmp[i], carry);
+            }
+        }
+    }
+
+    else 
+    {
+        for (; i < other.scale; i++)
+        {
+            if (carry == NULL) forest[i] = other.forest[i];
+
+            else
+            {
+                if (other.forest[i] == NULL)
+                {
+                    forest[i] = carry;
+                    carry = NULL;
+                }
+
+                else carry = merge(other.forest[i], carry);
+            }
+        }
+    }
+
+    if (carry != NULL) forest[i] = carry;
+
+    for (i = 0; i < other.scale; i++) other.forest[i] = NULL;
     delete [] tmp;
 }
 
-template<class Type>
-void priorityQueue<Type>::enQueue(const Type &x)
+template <class Type>
+node<Type> *Bernoulli<Type>::merge(node<Type> *t1, node<Type> *t2)
 {
-    if (currentLength == maxSize - 1) doubleSpace();
+    node<Type> *min, *max;
 
-    int hole = ++currentLength;
-    for (; hole > 1 && x < elem[hole / 2]; hole /= 2) elem[hole] = elem[hole / 2];
-    elem[hole] = x;
-}
-
-template<class Type>
-Type priorityQueue<Type>::deQueue()
-{
-    Type minElem = elem[1];
-
-    elem[1] = elem[currentLength--];
-    percolateDown(1);
-    return minElem;
-}
-
-template<class Type>
-void priorityQueue<Type>::percolateDown(int hole)
-{
-    int child;
-    Type tmp = elem[hole];
-
-    for (; hole * 2 <= currentLength; hole = child)
+    if (t1->data < t2->data)
     {
-        child = hole * 2;
-
-        if (child != currentLength && elem[child + 1] < elem[child]) child++;
-
-        if (elem[child] < tmp) elem[hole] = elem[child];
-        else break;
+        min = t1;
+        max = t2;
     }
 
-    elem[hole] = tmp;
+    else 
+    {
+        min = t2;
+        max = t1;
+    }
+
+    if (min->son == NULL) min->son = max;
+
+    else 
+    {
+        node<Type> *t = min->son;
+        while (t->bro != NULL) t = t->bro;
+        t->bro = max;
+    }
+
+    return min;
 }
 
-template<class Type>
-void priorityQueue<Type>::buildHeap()
+template <class Type>
+void Bernoulli<Type>::enQueue(Type x)
 {
-    for (int i = currentLength / 2; i > 0; i--) percolateDown(i);
+    Bernoulli<Type> tmp(1);
+    tmp.forest[0] = new node<Type>(x);
+    merge(tmp);
 }
 
-template<class Type>
-priorityQueue<Type>::priorityQueue(const Type *items, int size): maxSize(size + 10), currentLength(size)
+template <class Type>
+int Bernoulli<Type>::findMin()
 {
-    elem = new Type[maxSize];
-    for (int i = 0; i < size; i++) elem[i + 1] = items[i];
+    int min, i;
 
-    buildHeap();
+    for (i = 0; i < scale && forest[i] == NULL; i++);
+    min = i;
+
+    for (; i < scale; i++)
+    {
+        if (forest[i] != NULL && forest[i]->data < forest[min]->data) min = i;
+    }
+
+    return min;
 }
 
-////////////////////////////////////////////////////////////////
+template <class Type>
+Type Bernoulli<Type>::deQueue()
+{
+    Type value;
+    int min = findMin();
+
+    if (min == 0)
+    {
+        value = forest[0]->data;
+        delete forest[0];
+        forest[0] = NULL;
+        return value;
+    }
+
+    node<Type> *t = forest[min];
+    node<Type> *son, *brother;
+    int newScale = int (pow(2, min) - 1);
+    Bernoulli tmp(newScale);
+    value = t->data;
+    forest[min] = NULL;
+
+    son = t->son;
+    delete t;
+    int i = 0;
+
+    do
+    {
+        tmp.forest[i++] = son;
+        brother = son->bro;
+        son->bro = NULL;
+    } 
+    while ((son = brother) != NULL);
+
+    merge(tmp);
+
+    return value;
+}
+
+template <class Type>
+bool Bernoulli<Type>::isEmpty()
+{
+    for (int i = 0; i < scale; i++)
+    {
+        if (forest[i] != NULL) return false;
+    }
+
+    return true;
+}
+
+template <class Type>
+Type Bernoulli<Type>::getHead()
+{
+    int pos = findMin();
+    return forest[pos]->data;
+}
 
 int main()
 {
@@ -124,7 +291,7 @@ int main()
 
     char op[10];
     int opNum;
-    priorityQueue<int> que;
+    Bernoulli<int> que;
 
     for (int i = 0; i < num; i++)
     {
@@ -146,4 +313,6 @@ int main()
             cout << que.getHead() << endl;
         }
     }
+
+    return 0;
 }
