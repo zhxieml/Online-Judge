@@ -4,9 +4,9 @@
 using namespace std;
 
 template <class Type>
-void Bernoulli<Type>::deleteTree(typename tree<Type>::node *x)
+void Bernoulli<Type>::deleteTree(node<Type> *x)
 {
-    typename tree<Type>::node *son = x->son, *t;
+    node<Type> *son = x->son, *t;
     while (son != NULL)
     {
         t = son;
@@ -21,7 +21,7 @@ template <class Type>
 Bernoulli<Type>::Bernoulli(int n)
 {
     scale = int(log(n) / log(2)) + 1;
-    forest = new tree<Type>::node *[scale];
+    forest = new node<Type> *[scale];
     for (int i = 0; i < scale; i++) forest[i] = NULL;
 }
 
@@ -39,8 +39,8 @@ Bernoulli<Type>::~Bernoulli()
 template <class Type>
 void Bernoulli<Type>::merge(Bernoulli &other)
 {
-    tree<Type>::node **tmp = forest;
-    tree<Type>::node *carry;
+    node<Type> **tmp = forest;
+    node<Type> *carry;
     int tmpSize = scale;
     int min = scale < other.scale ? scale : other.scale;
     int i;
@@ -53,7 +53,7 @@ void Bernoulli<Type>::merge(Bernoulli &other)
 
     else if (forest[scale] != NULL) scale++;
 
-    forest = new tree<Type>::node *[scale];
+    forest = new node<Type> *[scale];
     for (i = 0; i < scale; i++) forest[i] = NULL;
 
     carry = NULL;
@@ -141,9 +141,9 @@ void Bernoulli<Type>::merge(Bernoulli &other)
 }
 
 template <class Type>
-typename tree<Type>::node *Bernoulli<Type>::merge(typename tree<Type>::node *t1, typename tree<Type>::node *t2)
+node<Type> *Bernoulli<Type>::merge(node<Type> *t1,node<Type> *t2)
 {
-    tree<Type>::node *min, *max;
+    node<Type> *min, *max;
 
     if (t1->data < t2->data)
     {
@@ -161,10 +161,90 @@ typename tree<Type>::node *Bernoulli<Type>::merge(typename tree<Type>::node *t1,
 
     else 
     {
-        tree<Type>::node *t = min->son;
+        node<Type> *t = min->son;
         while (t->bro != NULL) t = t->bro;
         t->bro = max;
     }
 
     return min;
+}
+
+template <class Type>
+void Bernoulli<Type>::enQueue(Type x)
+{
+    Bernoulli tmp(1);
+    tmp.forest[0] = new node<Type>(x);
+    merge(tmp);
+}
+
+template <class Type>
+int Bernoulli<Type>::findMin()
+{
+    int min;
+
+    for (int i = 0; i < scale && forest[i] == NULL; i++);
+    min = i;
+
+    for (; i < scale; i++)
+    {
+        if (forest[i] != NULL && forest[i]->data < forest[min]->data) min = i;
+    }
+
+    return min;
+}
+
+template <class Type>
+Type Bernoulli<Type>::deQueue()
+{
+    Type value;
+    int min = findMin();
+
+    if (min == 0)
+    {
+        value = forest[0]->data;
+        delete forest[0];
+        forest[0] = NULL;
+        return value;
+    }
+
+    node<Type> *t = forest[min];
+    node<Type> *son, *brother;
+    int newScale = int (pow(2, min) - 1);
+    Bernoulli tmp(newScale);
+    value = t->data;
+    forest[min] = NULL;
+
+    son = t->son;
+    delete t;
+    int i = 0;
+
+    do
+    {
+        tmp.forest[i++] = son;
+        brother = son->bro;
+        son->bro = NULL;
+    } 
+    while ((son->bro) != NULL);
+
+    merge(tmp);
+
+    return value;
+}
+
+template <class Type>
+bool Bernoulli<Type>::isEmpty()
+{
+    for (int i = 0; i < scale; i++)
+    {
+        if (forest[i] != NULL) return false;
+    }
+
+    return true;
+}
+
+template <class Type>
+Type Bernoulli<Type>::getHead() const
+{
+    int pos = findMin();
+    return forest[pos]->data;
 }

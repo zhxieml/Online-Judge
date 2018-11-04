@@ -8,12 +8,12 @@
     class Bernoulli
     {
     private:
-        typename tree<Type>::node **forest;
+        node<Type> **forest;
         int scale;
 
-        typename tree<Type>::node *merge(typename tree<Type>::node *t1, typename tree<Type>::node *t2);
+        node<Type> *merge(node<Type> *t1, node<Type> *t2);
         int findMin();
-        void deleteTree(typename tree<Type>::node *x);
+        void deleteTree(node<Type> *x);
 
     public:
         Bernoulli(int n = 100);
