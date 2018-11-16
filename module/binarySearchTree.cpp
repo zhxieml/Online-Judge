@@ -29,5 +29,5 @@ void binarySearchTree<Type>::insert(const Type &x)
 template <class Type>
 void binarySearchTree<Type>::insert(const Type &x, node *&p)
 {
-    
+    if (p == NULL) p = new node 
 }
