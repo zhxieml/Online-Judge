@@ -1,8 +1,5 @@
 #ifndef BINARYSEARCHTREE_H_INCLUDED
 #define BINARYSEARCHTREE_H_INCLUDED
-    #include <iostream>
-    using namespace std;
-
     template <class Type>
     class binarySearchTree
     {
@@ -20,14 +17,16 @@
         void insert(const Type &x, node *&p);
         void remove(const Type &x, node *&p);
         bool find(const Type &x, node *p) const;
-        void clear(node *&x);
+        void clear(node *p);
+        void display(node *p) const;
 
     public:
-        binarySearchTree(node *r);
+        binarySearchTree(node *r = NULL): root(r){};
         ~binarySearchTree();
-        bool find(const Type &x);
+        bool find(const Type &x) const;
         void insert(const Type &x);
         void remove(const Type &x);
+        void clear();
         void display() const;   // Display in order
     };
 
