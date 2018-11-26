@@ -1,5 +1,79 @@
-#include <iostream>
-using namespace std;
+template <class Type>
+class linkStack
+{
+private:
+    struct node
+    {
+        Type data;
+
+        node *next;
+
+        node(const Type &x, node *n = NULL)
+        {
+            data = x;
+            next = n;
+        }
+
+        node(): next(NULL){}
+        ~node(){}
+    };
+    node *top_p;
+public:
+    linkStack();
+    ~linkStack();
+    bool isEmpty() const;
+    void push(const Type &x);
+    Type pop();
+    Type top() const;
+};
+
+template <class Type>
+linkStack<Type>::linkStack()
+{
+    top_p = NULL;
+}
+
+template <class Type>
+linkStack<Type>::~linkStack()
+{
+    node *tmp;
+    while (top_p != NULL)
+    {
+        tmp = top_p;
+        top_p = top_p->next;
+        delete tmp;
+    }
+}
+
+template <class Type>
+bool linkStack<Type>::isEmpty() const
+{
+    return top_p == NULL;
+}
+
+template <class Type>
+void linkStack<Type>::push(const Type &x)
+{
+    top_p = new node(x, top_p);
+}
+
+template <class Type>
+Type linkStack<Type>::pop()
+{
+    node *tmp = top_p;
+    Type x = tmp->data;
+    top_p = top_p->next;
+    delete tmp;
+    return x;
+}
+
+template <class Type>
+Type linkStack<Type>::top() const
+{
+    return top_p->data;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
 
 template <class Type>
 class linkQueue
@@ -90,10 +164,19 @@ private:
     {  
         Type data;
         node *left, *right;
-
+        
         node(): left(NULL), right(NULL) {}
         node(Type item, node *l = NULL, node *r = NULL): data(item), left(l), right(r) {}
         ~node() {} 
+    };
+
+    
+    struct stNode
+    {
+        node *oriNode;
+        int timePop;
+
+        stNode(node *N = NULL): oriNode(N), timePop(0) {}
     };
 
     node *root;
@@ -126,7 +209,7 @@ private:
     void preTraveral(node *t) const;
     void postTraveral(node *t) const;
     void midTraveral(node *t) const;
-}; 
+ }; 
 
 template <class Type> 
 void binaryTree<Type>::makeTree(const Type &x, binaryTree &lt, binaryTree &rt)
@@ -193,7 +276,7 @@ void binaryTree<Type>::createTree(Type flag)
     node *tmp;
     Type x, ldata, rdata;
 
-    cout << "Input root:";
+    cout << "Input root: ";
     cin >> x;
     root = new node(x);
     que.enQueue(root);	
@@ -207,4 +290,78 @@ void binaryTree<Type>::createTree(Type flag)
         if (rdata != flag) que.enQueue(tmp->right = new node(rdata));
     }
     cout << "create completed!\n";
+}
+
+template <class Type>
+void binaryTree<Type>::preTraveral() const
+{
+    linkStack<node *> s;
+    node *tmp;
+    s.push(root);
+
+    while (!s.isEmpty())
+    {
+        tmp = s.pop();
+
+        cout << tmp->data << ' ';
+        if (tmp->right != NULL) s.push(tmp->right);
+        if (tmp->left != NULL) s.push(tmp->left);
+    }
+}
+
+template <class Type>
+void binaryTree<Type>::midTraveral() const
+{
+    linkStack<stNode> s;
+    stNode tmp(root);
+    s.push(tmp);
+
+    while (!s.isEmpty())
+    {
+        tmp = s.pop();
+
+        if (++tmp.timePop == 2)
+        {
+            cout << tmp.oriNode->data << ' ';
+            if (tmp.oriNode->right != NULL) s.push(stNode(tmp.oriNode->right));
+        }
+
+        else
+        {
+            s.push(tmp);
+            
+            if (tmp.oriNode->left != NULL) s.push(stNode(tmp.oriNode->left));
+        }
+    }
+}
+
+template <class Type>
+void binaryTree<Type>::postTraveral() const
+{
+    linkStack<stNode> s;  
+    stNode tmp(root);
+    s.push(tmp);
+
+    while (!s.isEmpty())
+    {
+        tmp = s.pop();
+
+        if (++tmp.timePop == 3)
+        {
+            cout << tmp.oriNode->data << ' ';
+            continue;
+        }
+
+        s.push(tmp);
+
+        if (tmp.timePop == 1)
+        {
+            if (tmp.oriNode->left != NULL) s.push(stNode(tmp.oriNode->left));
+        }
+
+        else
+        {
+            if (tmp.oriNode->right != NULL) s.push(stNode(tmp.oriNode->right));
+        }
+    }
 }
