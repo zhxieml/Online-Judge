@@ -197,18 +197,18 @@ public:
     void clear();
     int size() const {return size(root);} 
     int height() const {return height(root);}
-    void preTraveral() const;
-    void postTraveral() const;
-    void midTraveral() const;
+    void preTraverse() const;
+    void postTraverse() const;
+    void midTraverse() const;
    	void createTree(Type flag);
 
 private:
     void clear(node *t);
     int height(node *t) const;
     int size(node *t) const;
-    void preTraveral(node *t) const;
-    void postTraveral(node *t) const;
-    void midTraveral(node *t) const;
+    void preTraverse(node *t) const;
+    void postTraverse(node *t) const;
+    void midTraverse(node *t) const;
  }; 
 
 template <class Type> 
@@ -293,7 +293,7 @@ void binaryTree<Type>::createTree(Type flag)
 }
 
 template <class Type>
-void binaryTree<Type>::preTraveral() const
+void binaryTree<Type>::preTraverse() const
 {
     linkStack<node *> s;
     node *tmp;
@@ -310,7 +310,7 @@ void binaryTree<Type>::preTraveral() const
 }
 
 template <class Type>
-void binaryTree<Type>::midTraveral() const
+void binaryTree<Type>::midTraverse() const
 {
     linkStack<stNode> s;
     stNode tmp(root);
@@ -336,7 +336,7 @@ void binaryTree<Type>::midTraveral() const
 }
 
 template <class Type>
-void binaryTree<Type>::postTraveral() const
+void binaryTree<Type>::postTraverse() const
 {
     linkStack<stNode> s;  
     stNode tmp(root);

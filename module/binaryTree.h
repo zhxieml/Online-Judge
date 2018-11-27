@@ -32,18 +32,18 @@
         void clear();
         int size() const {return size(root);} 
         int height() const {return height(root);}
-        void preTraveral() const;
-        void postTraveral() const;
-        void midTraveral() const;
+        void preTraverse() const;
+        void postTraverse() const;
+        void midTraverse() const;
         void createTree(Type flag);
 
     private:
         void clear(node *t);
         int height(node *t) const;
         int size(node *t) const;
-        void preTraveral(node *t) const;
-        void postTraveral(node *t) const;
-        void midTraveral(node *t) const;
+        void preTraverse(node *t) const;
+        void postTraverse(node *t) const;
+        void midTraverse(node *t) const;
     }; 
 
 #endif

@@ -190,9 +190,9 @@ public:
 
     void clear();
     bool isCBT() const;
-    void preTraveral() const;
-    void postTraveral() const;
-    void midTraveral() const;
+    void preTraverse() const;
+    void postTraverse() const;
+    void midTraverse() const;
 
 private:
     void clear(node *&x);
@@ -241,7 +241,7 @@ bool bTree::isCBT() const
     return true;
 }
 
-void bTree::preTraveral() const
+void bTree::preTraverse() const
 {
     linkStack<node *> s;
     node *tmp;
@@ -257,7 +257,7 @@ void bTree::preTraveral() const
     }
 }
 
-void bTree::midTraveral() const
+void bTree::midTraverse() const
 {
     linkStack<stNode> s;
     stNode tmp(root);
@@ -282,7 +282,7 @@ void bTree::midTraveral() const
     }
 }
 
-void bTree::postTraveral() const
+void bTree::postTraverse() const
 {
     linkStack<stNode> s;  
     stNode tmp(root);
