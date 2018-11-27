@@ -165,7 +165,7 @@ int main()
         switch (op)
         {
             case '+': 
-                for (int i = 0; i < opNum; i++)
+                for (int j = 0; j < opNum; j++)
                 {
                     cin >> opElem;
 
@@ -177,7 +177,7 @@ int main()
                 break;
             
             case '-':
-                for (int i = 0; i < opNum; i++)
+                for (int j = 0; j < opNum; j++)
                 {
                     cin >> opElem;
 
@@ -189,7 +189,7 @@ int main()
                 break;
 
             case '*':
-                for (int i = 0; i < opNum; i++)
+                for (int j = 0; j < opNum; j++)
                 {
                     cin >> opElem;
                     
