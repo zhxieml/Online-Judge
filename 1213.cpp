@@ -395,6 +395,7 @@ int main()
 
     if (isSamePre(t1, t2) && isSameMid(t1, t2)) cout << 'Y';
     else cout << 'N';
+    
     return 0;
 }
 

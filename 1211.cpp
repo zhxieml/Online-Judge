@@ -193,6 +193,8 @@ int main()
 
     if (tree.isCBT()) cout << 'Y';
     else cout << 'N';
+
+    return 0;
 }
 
 
