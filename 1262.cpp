@@ -2,6 +2,28 @@
 using namespace std;
 
 template<class Type>
+class priorityQueue
+{
+private:
+    int currentLength;
+    Type *elem;
+    int maxSize;
+
+    void doubleSpace();
+    void buildHeap();
+    void percolateDown(int hole);
+
+public:
+    priorityQueue(int capacity = 100);
+    priorityQueue(const Type data[], int size);
+    ~priorityQueue();
+    bool isEmpty() const;
+    void enQueue(const Type &x);
+    Type deQueue();
+    Type getHead() const;
+};
+
+template<class Type>
 priorityQueue<Type>::priorityQueue(int capacity)
 {
     elem = new Type[capacity];
@@ -92,3 +114,68 @@ Type priorityQueue<Type>::deQueue()
     percolateDown(1);
     return minItem;
 } 
+
+////////////////////////////////////////////////////////////////////////
+
+int main() 
+{	
+    int num;
+    cin >> num;
+
+    int in, out;
+    priorityQueue<int> queIn, queOut;
+
+    for (int i = 0; i < num; i++)
+    {
+        cin >> in >> out;
+
+        queIn.enQueue(in);
+        queOut.enQueue(out);
+    }
+
+    int tmp;
+    int currentTime = 0;
+    int currentNum = 0;
+    int count1 = 0;
+    int max1 = 0;
+    int max2 = 0;
+
+    while (!queIn.isEmpty() || !queOut.isEmpty())
+    {   
+        if (queIn.getHead() <= queOut.getHead() && !queIn.isEmpty())
+        {
+            tmp = queIn.deQueue();
+
+            if (currentNum == 0)
+            {
+                if (tmp - currentTime > max2 && currentTime != 0) max2 = tmp - currentTime;
+            }
+
+            else count1 += tmp - currentTime;
+
+            currentNum++;
+            currentTime = tmp;
+        }
+
+        else
+        {
+            tmp = queOut.deQueue();
+
+            count1 += tmp - currentTime;
+
+            if (currentNum == 1) 
+            {
+                if (count1 > max1) max1 = count1;
+
+                count1 = 0;
+            }
+
+            currentNum--;
+            currentTime = tmp;
+        }
+    }
+
+    cout << max1 << ' ' << max2;
+
+    return 0;
+}
