@@ -15,7 +15,7 @@ public:
     void unionn(int r1, int r2);
 };
 
-    disJointSet::disJointSet(int s)
+disJointSet::disJointSet(int s)
 {
     size = s;
     parent = new int[size];

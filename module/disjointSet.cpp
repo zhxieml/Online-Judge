@@ -14,10 +14,27 @@ disJointSet::~disJointSet()
     delete [] parent;
 }
 
+// int disJointSet::find(int x)
+// {
+//     if (parent[x] < 0) return x;
+//     return parent[x] = find(parent[x]);
+// }
+
 int disJointSet::find(int x)
 {
-    if (parent[x] < 0) return x;
-    return parent[x] = find(parent[x]);
+    int start = x;
+    int tmp;
+
+    while (parent[x] >= 0) x = parent[x];
+
+    while (start != x)
+    {
+        tmp = parent[start];
+        parent[start] = x;
+        start = tmp;
+    }
+
+    return x;
 }
 
 // r1, r2 are two roots
