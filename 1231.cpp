@@ -3,7 +3,6 @@ using namespace std;
 
 struct node
 {
-    // int data;
     int parent, left, right;
 
     node(int p = 0, int l = 0, int r = 0): parent(p), left(l), right(r) {}
@@ -48,6 +47,6 @@ int main()
     while (nodes[root].parent) root = nodes[root].parent;
 
     cout << find_LCA(root, x, y, nodes);
-    
+
     return 0;
 }

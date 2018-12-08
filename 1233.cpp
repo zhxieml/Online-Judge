@@ -6,8 +6,6 @@ using namespace std;
 // 关于简单路径的起点终点是否能相同，这个有点争议。本题规定不能相同
 
 int count = 0;
-bool *visited;
-// int length;
 
 class adjListGraph
 {
@@ -81,42 +79,26 @@ void adjListGraph::dfs(int s, bool visited[], int l)
 
     bool *new_visited = new bool[ver + 1];
     for (int i = 1; i <= ver; ++i) new_visited[i] = visited[i];    
-    // delete [] visited; 
-    // visited = new_visited;
-
     new_visited[s] = true;
 
     --l;
-
-    // for (int i = 1; i <= ver; i++) cout << new_visited[i] << endl;
-
-    // if (l == 0) 
-    // {
-    //     ++count;
-    //     return;
-    // }
 
     while (tmp)
     {
         if (!new_visited[tmp->end]) 
         {
-            // cout << s << " -> " << tmp->end  << "(" << l << ")" << endl;
             if (l != 0) dfs(tmp->end, new_visited, l);
-            // if (l == 0) ++count;
 
             else ++count;
         }
 
         tmp = tmp->next;
-        // if (!tmp) ++count;
     }
 }
 
 void adjListGraph::dfs(int s, int l)
 {
-    // bool *visited = new bool[ver + 1];
-    // for (int i = 1; i <= ver; i++) visited[i] = false;
-    // bool *visited;
+    bool *visited = new bool[ver + 1];
 
     dfs(s, visited, l);
 }
@@ -130,8 +112,6 @@ int main()
 
     adjListGraph graph(n);
     int s, e;
-    visited = new bool[n + 1];
-    for (int i = 1; i <= n; i++) visited[i] = false;
 
     for (int i = 0; i < m; ++i)
     {
