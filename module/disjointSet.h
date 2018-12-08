@@ -3,16 +3,16 @@
     #include <iostream>
     using namespace std;
 
-    class disjointSet
+    class disJointSet
     {
     private:
         int size;
         int *parent;
 
     public:
-        disjointSet(int s);
-        ~disjointSet();
+        disJointSet(int s);
+        ~disJointSet();
         int find(int x);
-        void union(int r1, int r2);
+        void unionn(int r1, int r2);
     };
 #endif

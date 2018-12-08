@@ -82,7 +82,7 @@ template <class Type>
 void hfTree<Type>::getCode(hfCode result[]) 
 { 
     int size = length / 2;  
-    int p,s; // s是追溯过程中正在处理的结点，p是s的父结点下标
+    int p, s; // s是追溯过程中正在处理的结点，p是s的父结点下标
     for (int i = size; i < length; ++i)
     {  
         result[i - size].data = elem[i].data;

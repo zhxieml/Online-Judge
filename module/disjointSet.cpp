@@ -1,27 +1,27 @@
 #include <iostream>
-#include "disjointSet.h"
+#include "disJointSet.h"
 using namespace std;
 
-disjointSet::disjointSet(int s)
+disJointSet::disJointSet(int s)
 {
     size = s;
     parent = new int[size];
     for (int i = 0; i < size; i++) parent[i] = -1;
 }
 
-disjointSet::~disjointSet()
+disJointSet::~disJointSet()
 {
     delete [] parent;
 }
 
-int disjointSet::find(int x)
+int disJointSet::find(int x)
 {
     if (parent[x] < 0) return x;
     return parent[x] = find(parent[x]);
 }
 
 // r1, r2 are two roots
-void disjointSet::union(int r1, int r2)
+void disJointSet::unionn(int r1, int r2)
 {
     if (r1 == r2) return;
 
