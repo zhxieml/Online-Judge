@@ -1,46 +1,172 @@
-// Online Judge 当前用户：517030910356 服务器时间：2018-12-07 16:27:00
-// 首页
-// 题库
-// 比赛
-// 作业
-// 提交
-// 评测状态
-// 1232. maze
-// Description
-// P332.2&5
+#include <iostream>
+#include "math.h"
+using namespace std;
 
-// Input Format
-// 第一行三个整数 N A B，表示迷宫的大小，也就是一共N行。两个整数A, B，分别表示入口和出口的格子编号。
+class disJointSet
+{
+private:
+    int size;
+    int *parent;
+    int *path;
 
-// 解释：格子编号就是从上往下横着一行一行的数，分别是1234……
+public:
+    disJointSet(int s);
+    ~disJointSet();
+    int find(int x);
+    void unionn(int r1, int r2);
+    void display(int n) const;
+    void link(int a, int b);
+};
 
-// 第二行开始不知道有多少行，一行两个整数Pi和Qi。表示第i次砸墙的参数，Pi表示砸的是哪个格子周围的墙,Qi一共有0,1,2,3四种可能性，分别表示砸左上、右上、左下、右下的墙。
+disJointSet::disJointSet(int s)
+{
+    size = s;
+    parent = new int[size];
+    path = new int[size];
+    for (int i = 0; i < size; i++) parent[i] = path[i] = -1;
+}
 
-// 为了简化问题，左右的墙就不给砸了，砸墙啥的请参考书上的形容（挺喜感。。。）
+disJointSet::~disJointSet()
+{
+    delete [] parent;
+}
 
-// Output Format
-// 输出一行一列整数空格隔开，表示从入口到出口的路径
+int disJointSet::find(int x)
+{
+    int start = x;
+    int tmp;
 
-// Sample Input
-// 2 2 3
-// 2 1 // 2号格子右上
-// 1 3 // 1号格子右下
-// 2 0
-// 3 0
-// Sample Output
-// 2 1 3
-// Tips
-// 按书上第五题的要求，路径压缩的find函数不许用递归！
+    while (parent[x] >= 0) x = parent[x];
 
-// 砸墙如果砸的是最外层的墙的话，是砸不掉的。。。（就当没砸）。
+    while (start != x)
+    {
+        tmp = parent[start];
+        parent[start] = x;
+        start = tmp;
+    }
 
-// 另外，输入有很多很多行，砸到某一行发觉入口和出口通了就直接输出结果，并终止程序。
+    return x;
+}
 
-// 如果说路径有很多很多很多很多很多的话。。。输出字典序最小的路径。
+// r1, r2 are two roots
+void disJointSet::unionn(int r1, int r2)
+{
+    if (r1 == r2) return;
 
-// 解释：比如 1 2 4 和 1 3 4 都可以的话就输出前者。
+    if (parent[r1] > parent[r2])
+    {
+        parent[r2] += parent[r1];
+        parent[r1] = r2;
+    }
 
-// 提交此题
-// Powered by PHP Technologies | Contributors 
-// Copyright © 2011-2018 ACM Class. All rights reserved. 
-// 0.048 - render 0.0128 - instru - 2 queries - 0.0048 @ portal
+    else
+    {
+        parent[r1] += parent[r2];
+        parent[r2] = r1;
+    }
+}
+
+void disJointSet::link(int a, int b)
+{
+    if (path[a] > b || path[a] == -1) path[a] = b;
+}
+
+void disJointSet::display(int n) const
+{
+    cout << n << ' ';
+
+    while (path[n] > 0)
+    {
+        n = path[n];
+        cout << n << ' ';
+    }
+}
+
+///////////////////////////////////////////////////////////////////
+
+int main() 
+{	
+    int N, A, B;
+    cin >> N >> A >> B;
+    int scale = N * (1 + N) / 2;
+
+    int *level = new int[scale + 1];
+    int index = 1;
+    level[0] = 0;
+    level[1] = 1;
+    for (int i = 2; i <= scale; ++i) 
+    {
+        if (i >= index + level[i - 1]) 
+        {
+            level[i] = level[i - 1] + 1;
+            index = i;
+        }
+
+        else level[i] = level[i - 1];
+    }
+
+    disJointSet djs(scale);
+    int grid, wall;
+    // int a, b;
+    int to_link;
+
+    // cout << djs.find(A) << djs.find(B);
+
+    while (djs.find(A) != djs.find(B))
+    {
+        cin >> grid >> wall;
+
+        // a = djs.find(grid);
+
+        switch (wall)
+        {
+            case 0: 
+                if (level[grid] == level[grid - 1]) to_link = grid - level[grid];
+                break;
+
+            case 1:
+                if (grid != scale && level[grid] == level[grid + 1]) to_link = grid - level[grid] + 1;
+                break;
+
+            case 2:
+                if (level[grid] != N) to_link = grid + level[grid];
+                break;
+
+            case 3:
+                if (level[grid] != N) to_link = grid + level[grid] + 1;
+        }
+
+        djs.unionn(djs.find(grid), djs.find(to_link));
+
+        if (A == grid)
+        {
+            djs.link(grid, to_link);
+            continue;
+        }
+
+        if (A == to_link)
+        {
+            djs.link(to_link, grid);
+            continue;
+        }
+
+        if (B == grid)
+        {
+            djs.link(to_link, grid);
+            continue;
+        }
+
+        if (B == to_link)
+        {
+            djs.link(grid, to_link);
+            continue;
+        }
+
+        djs.link(grid, to_link);
+    }
+
+    djs.display(A);
+
+    // cout << int(pow(2, 3)) << endl;
+    return 0;
+}
