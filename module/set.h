@@ -24,7 +24,7 @@
         set(int volume = 20);
         set(const set<Type> &s);
         ~set();
-
+    
         set &operator=(const set<Type> &s);
         int getSize(){return currentSize;}
         bool insert(Type x);

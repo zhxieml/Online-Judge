@@ -133,3 +133,23 @@ set<Type> operator-(const set<Type> &s1, const set<Type> &s2)
 
     return s;
 }
+
+template <class Key, class Other>
+int binarySearch(set<Key, Other> data[], int size, const Key &x)
+{
+    int low = 1, high = size, mid;
+
+    while (low <= high)
+    {
+        mid = (low + high) / 2;
+        if (x == data[mid].Key) return mid;
+        if (x < data[mid].Key) high = mid - 1;
+        else low = mid + 1;
+    }
+
+    return 0;
+}
+
+// 插值查找
+// next = low + (x - a[low]) / (a[high] - a[low]) * (high - low - 1)
+
