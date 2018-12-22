@@ -1,52 +1,237 @@
-// Online Judge 当前用户：517030910356 服务器时间：2018-12-07 16:25:22
-// 首页
-// 题库
-// 比赛
-// 作业
-// 提交
-// 评测状态
-// 1236. spath
-// Description
-// 终于到了最短路径部分的内容，想必你已经很累了。但还是请坚持，胜利就在前方。
+#include <iostream>
+using namespace std;
 
-// 如果你没有去听课，或者是觉得“最短路径”这个名字很陌生，那么请先返回376页，把概念先扫一遍（书上的介绍流程：无权图（搜索）->加权图（dijkstra单源的）->带负权的图（spfa算法）->floyd算法（多源））在这一题中，我们要求实现带负权的单源最短路径算法。由于带负权，dijkstra算法边不能再使用（原因请看P387），所以我们要求利用邻接表，通过搜索算法完成（事实上解决这个问题的最好算法是SPFA算法，P387有它的介绍。如果你有兴趣，当然也可以用它。）。
+template <class Type>
+class linkQueue
+{
+private:
+    struct node
+    {
+        Type data;
 
-// 给定带负权的有向图，起点start，终点end，请计算由start到end的最短路径（数据保证不出现负环）
+        node *next;
 
-// 请不要使用floyd算法。
+        node(const Type &x, node *n = NULL)
+        {
+            data = x;
+            next = n;
+        }
 
-// 为简化题目，我们约定：用正整数1,2,3……n来表示每个结点的ID（编号）
+        node(): next(NULL){}
+        ~node(){}
+    };
 
-// Input Format
-// 第1行：n m start end //正整数n ，代表图中结点的数量。非负整数m代表要图中有向边的数量。
+    node *front, *rear;
 
-// 第2行到第1+m行: a b p //每行两个整数：代表结点a到结点b有一条有向边（a->b），权值为p
+public:
+    linkQueue();
+    ~linkQueue();
+    bool isEmpty() const;
+    void enQueue(const Type &x);
+    Type deQueue();
+    Type getHead() const;
+};
 
-// Output Format
-// 一个整数，由start到end的最短路径上边的总权值的大小。
+template <class Type>
+linkQueue<Type>::linkQueue()
+{
+    front = rear = NULL;
+}
 
-// Sample Input
-// 7 12 3 6
-// 1 2 2
-// 3 1 4
-// 1 4 1
-// 2 4 3
-// 4 5 2
-// 2 5 10
-// 3 6 3
-// 4 6 -8
-// 4 7 4 
-// 5 7 6
-// 7 6 1
-// 1 3 5
-// Sample Output
-// -3                    //P387的例子
-// Limits
-// 0<n<=10 0<=m<=100
+template <class Type>
+linkQueue<Type>::~linkQueue()
+{
+    node *tmp;
+    while (front != NULL)
+    {
+        tmp = front;
+        front = front->next;
+        delete tmp;
+    }
+}
 
-// 数据保证合法
+template <class Type>
+bool linkQueue<Type>::isEmpty() const
+{
+    return front == NULL;
+}
 
-// 提交此题
-// Powered by PHP Technologies | Contributors 
-// Copyright © 2011-2018 ACM Class. All rights reserved. 
-// 0.0451 - render 0.0131 - instru - 2 queries - 0.0058 @ portal
+template <class Type>
+Type linkQueue<Type>::getHead() const
+{
+    return front->data;
+}
+
+template <class Type>
+void linkQueue<Type>::enQueue(const Type &x)
+{
+    if (rear == NULL) front = rear = new node(x);
+    else rear = rear->next = new node(x);
+}
+
+template <class Type>
+Type linkQueue<Type>::deQueue()
+{
+    node *tmp = front;
+    Type value = front->data;
+    front = front->next;
+    if (front == NULL) rear = NULL; // empty
+    delete tmp;
+    return value;
+}
+
+////////////////////////////////////////////////////////////////
+
+class adjListGraph
+{
+private:
+    struct edgeNode
+    {
+        int end;
+        int weight;
+        edgeNode *next;
+
+        edgeNode(int e, int w, edgeNode *n = NULL): end(e), weight(w), next(n) {}
+    };
+    
+    struct verNode
+    {
+        int ver;
+        edgeNode *head;
+        verNode(edgeNode *h = NULL): head(h) {}
+
+        bool operator<(const verNode &x) const {return ver < x.ver;}
+        bool operator>(const verNode &x) const {return ver > x.ver;}
+        bool operator==(const verNode &x) const {return ver == x.ver;}    
+    };
+
+    struct queueNode
+    {
+        int dist;
+        int node;
+
+        bool operator<(const queueNode &x) const {return dist < x.dist;}
+        bool operator>(const queueNode &x) const {return dist > x.dist;}
+        bool operator==(const queueNode &x) const {return dist == x.dist;}
+    };
+
+    verNode *vlist;
+    int ver;
+    int edge;
+
+public:
+    adjListGraph(int size);
+    ~adjListGraph();
+
+    bool insert(int s, int e, int w);
+    bool remove(int s, int e);
+    bool exist(int s, int e) const;
+    void print_path(int start, int end, int prev[]) const;
+    void minus_short_dis(int start, int end) const;
+};
+
+adjListGraph::adjListGraph(int size)
+{
+    ver = size;
+    vlist = new verNode[ver + 1];
+    edge = 0;
+
+    for (int i = 1; i <= size; i++) vlist[i].ver = i;
+}
+
+adjListGraph::~adjListGraph()
+{
+    edgeNode *tmp;
+
+    for (int i = 0; i < ver; ++i)
+    {
+        while ((tmp = vlist[i].head) != NULL)
+        {
+            vlist[i].head = tmp->next;
+            delete tmp;
+        }
+    }
+
+    delete [] vlist;
+}
+
+bool adjListGraph::insert(int s, int e, int w)
+{
+    vlist[s].head = new edgeNode(e, w, vlist[s].head);
+
+    ++edge;
+    return true;
+}
+
+void adjListGraph::print_path(int start, int end, int prev[]) const
+{
+    if (start == end)
+    {
+        cout << vlist[start].ver;
+        return;
+    }
+
+    print_path(start, prev[end], prev);
+    cout << ' ' << vlist[end].ver;
+}
+
+void adjListGraph::minus_short_dis(int start, int end) const
+{
+    int *distance = new int[ver + 1];
+    int *prev = new int[ver + 1];
+    int u, start_i;
+    edgeNode *p;
+    linkQueue<int> que;
+
+    for (start_i = 1; start_i <= ver; ++start_i)
+    {
+        if (vlist[start_i].ver == start) break;
+    }
+
+    if (start_i == ver) 
+    {
+        cout << "Error! The start node doesn't exist." << endl;
+        return;
+    }
+
+    for (int i = 1; i <= ver; ++i) distance[i] = 2147483647;
+
+    distance[start_i] = 0;
+    prev[start_i] = start_i;    
+    que.enQueue(start_i);
+
+    while (!que.isEmpty())
+    {
+        u = que.deQueue();
+        for (p = vlist[u].head; p != NULL; p = p->next)
+        {
+            if (distance[p->end] > distance[u] + p->weight)
+            {
+                distance[p->end] = distance[u] + p->weight;
+                prev[p->end] = u;
+                que.enQueue(p->end);
+            }
+        }
+    }
+
+    cout << distance[end];
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+
+int main() 
+{	
+    int n, m, start, end;
+    cin >> n >> m >> start >> end;
+
+    adjListGraph alg(n);
+    int a, b, p;
+    for (int i = 0; i < m; ++i)
+    {
+        cin >> a >> b >> p;
+        alg.insert(a, b, p);
+    }
+
+    alg.minus_short_dis(start, end);
+    return 0;
+}
